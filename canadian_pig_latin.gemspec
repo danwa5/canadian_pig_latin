@@ -10,8 +10,9 @@ Gem::Specification.new do |spec|
   spec.email         = ["danwa5@gmail.com"]
 
   spec.summary       = %q{Pig latin in a Canadian accent, ay?}
-  spec.description   = ''
-  spec.homepage      = ''
+  spec.description   = %q{Translates words to pig latin. Occasionally, inserts an 'aboot', and ends all sentences with 'ay!'}
+  spec.homepage      = %q{https://github.com/danwa5/canadian_pig_latin}
+  spec.license       = "MIT"
 
   # Prevent pushing this gem to RubyGems.org by setting 'allowed_push_host', or
   # delete this section to allow pushing this gem to any host.
