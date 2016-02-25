@@ -13,20 +13,36 @@ describe CanadianPigLatin do
     end
   end
 
+  describe 'constants' do
+    describe 'END_PUNCTUATION_REGEXP' do
+      it 'matches any trailing period, question mark, or exclamation point' do
+        expect('dog.').to match(described_class::END_PUNCTUATION_REGEXP)
+        expect('Goat???').to match(described_class::END_PUNCTUATION_REGEXP)
+        expect('horse!.').to match(described_class::END_PUNCTUATION_REGEXP)
+        expect('Pig.?!').to match(described_class::END_PUNCTUATION_REGEXP)
+        expect('rabbit,').not_to match(described_class::END_PUNCTUATION_REGEXP)
+      end
+    end
+    describe 'END_COMMA_REGEXP' do
+      it 'matches any trailing comma' do
+        expect('chicken,').to match(described_class::END_COMMA_REGEXP)
+        expect('dog.').not_to match(described_class::END_COMMA_REGEXP)
+        expect('Goat???').not_to match(described_class::END_COMMA_REGEXP)
+        expect('horse!.').not_to match(described_class::END_COMMA_REGEXP)
+        expect('Pig.?!').not_to match(described_class::END_COMMA_REGEXP)
+        expect('turkey').not_to match(described_class::END_COMMA_REGEXP)
+      end
+    end
+  end
+
   describe '#translate' do
-    context 'when words contain only letters' do
-      let(:input) { 'Words contain only letters' }
-      it 'translates every word correctly' do
-        expect(subject.translate(input)).to eq('Ordsway ontaincay onlyyay etterslay')
+    context 'argument is present' do
+      let(:input) { 'Hows it going over there? Hey, you know what? This argument contains some words. Yay!' }
+      it 'returns a translation' do
+        expect(subject.translate(input).length).to be > 0
       end
     end
-    context 'when words end in punctuation (,.?!)' do
-      let(:input) { 'Words, contain. some? commas!' }
-      it 'translates every word correctly' do
-        expect(subject.translate(input)).to eq('Ordsway, ontaincay. omesay? ommascay!')
-      end
-    end
-    context 'string containing only whitespace' do
+    context 'argument is string containing only whitespace' do
       let(:input) { '   ' }
       it 'returns an empty string' do
         expect(subject.translate(input)).to eq('')
@@ -57,6 +73,44 @@ describe CanadianPigLatin do
     it 'returns the correct translation for every word' do
       mapping.each do |original, translated|
         expect(subject.translate_word(original)).to eq(translated)
+      end
+    end
+  end
+
+  describe '#insert_aboot' do
+    context 'argument is empty array' do
+      it 'returns an empty array' do
+        expect(subject.insert_aboot([])).to be_empty
+      end
+    end
+    context 'argument is given' do
+      let(:input) { 'Hows it going over there? Hey, you know what? This argument contains some words. Yay!'.split(' ') }
+      let(:number) { Math.sqrt(input.size/2).floor }
+      it 'returns an array that contains the correct number of "aboot"' do
+        expect(subject.insert_aboot(input).count('aboot')).to eq(number)
+      end
+      it 'returns an array where "aboot" does not begin a sentence' do
+        expect(subject.insert_aboot(input).join(' ')).not_to match(/(^aboot.*|[\.\?!]+\saboot.*)/)
+      end
+      it 'returns an array where "aboot" does not end a sentence' do
+        expect(subject.insert_aboot(input).join(' ')).not_to match(/(.*aboot[\.\?!]+|.*aboot$)/)
+      end
+    end
+  end
+
+  describe '#insert_ay' do
+    context 'argument is empty array' do
+      it 'returns an empty array' do
+        expect(subject.insert_ay([])).to be_empty
+      end
+    end
+    context 'argument is given' do
+      let(:input) { 'Hows it going over there? Hey, you know what? This argument contains some words. Yay!'.split(' ') }
+      it 'returns an array that contains the correct number of "ay!"' do
+        expect(subject.insert_ay(input).count('ay!')).to eq(4)
+      end
+      it 'returns an array where "ay!" does not start a sentence' do
+        expect(subject.insert_ay(input).join(' ')).not_to match(/(^ay!.*|.*ay! [a-z]+)/)
       end
     end
   end
