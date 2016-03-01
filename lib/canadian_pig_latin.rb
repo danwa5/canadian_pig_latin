@@ -1,21 +1,37 @@
 require "canadian_pig_latin/version"
 
 class CanadianPigLatin
+  attr_reader :input, :country
+
   END_PUNCTUATION_REGEXP = /[\.\?!]+$/
   END_COMMA_REGEXP = /,+$/
 
-  def self.translate(input='')
-    new.translate(input)
+  EXPRESSIONS = {
+    'Canada' => { 'popular' => 'aboot', 'interjection' => 'ay!' },
+    'USA' => { 'popular' => 'awesome', 'interjection' => 'dude!' },
+    'Australia' => { 'popular' => 'freshie', 'interjection' => 'mate!' },
+  }
+
+  def self.translate(input='', options = {})
+    if options.has_key?(:country) && !EXPRESSIONS.keys.include?(options[:country])
+      raise ArgumentError, 'Please specify a valid country: Canada, USA, or Australia'
+    end
+    new(input, options).translate
   end
 
-  def translate(input)
+  def initialize(input, options)
+    @input = input
+    @country = options.fetch(:country, 'Canada')
+  end
+
+  def translate
     output = Array.new
     words = input.split(' ')
     words.each do |word|
       output << translate_word(word)
     end
-    output = insert_aboot(output)
-    output = insert_ay(output)
+    output = insert_popular_word(output)
+    output = insert_interjection(output)
     output.join(' ')
   end
 
@@ -35,7 +51,7 @@ class CanadianPigLatin
     capitalized?(word) ? translated.downcase.capitalize : translated
   end
 
-  def insert_aboot(words)
+  def insert_popular_word(words)
     return words if words.empty?
     # Get array of indices for words that do not end in . or ? or !
     indices = words.each_index.select { |index| !capitalized?(words[index]) && !words[index].match(END_PUNCTUATION_REGEXP) }
@@ -46,20 +62,20 @@ class CanadianPigLatin
     # Choose the words to insert 'aboot' after, and then insert
     aboot_indices = indices.sample(num_aboots).sort
     aboot_indices.each_with_index do |index, offset|
-      words.insert(index+offset+1, 'aboot')
+      words.insert(index+offset+1, EXPRESSIONS[country]['popular'])
     end
     words
   end
 
-  def insert_ay(words)
+  def insert_interjection(words)
     return words if words.empty?
     # Get array of indices for words that end in . or ? or !
     indices = words.each_index.select { |index| words[index].match(END_PUNCTUATION_REGEXP) }
 
-    # Insert 'ay! at the end of a sentence'
+    # Insert interjection at the end of a sentence
     indices.each_with_index do |index, offset|
       words[index+offset].sub!(END_PUNCTUATION_REGEXP, ',')
-      words.insert(index+offset+1, 'ay!')
+      words.insert(index+offset+1, EXPRESSIONS[country]['interjection'])
     end
     words
   end
