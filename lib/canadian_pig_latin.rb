@@ -80,10 +80,12 @@ class CanadianPigLatin
     words
   end
 
+  # check if word begins with vowel
   def begins_with_vowel?(word)
     word.match(/^[aeiouAEIOU]/) ? true : false
   end
 
+  # check if word begins with capital
   def capitalized?(word)
     word.match(/^[A-Z]/) ? true : false
   end
