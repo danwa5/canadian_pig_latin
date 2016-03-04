@@ -14,7 +14,7 @@ class CanadianPigLatin
 
   def self.translate(input='', options = {})
     if options.has_key?(:country) && !EXPRESSIONS.keys.include?(options[:country])
-      raise ArgumentError, 'Please specify a valid country: Canada, USA, or Australia'
+      raise ArgumentError, "Please specify a valid country: #{EXPRESSIONS.keys.join(', ')}"
     end
     new(input, options).translate
   end

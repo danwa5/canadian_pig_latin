@@ -51,9 +51,10 @@ describe CanadianPigLatin do
     end
     context 'with invalid country' do
       it 'raises an exception' do
+        countries = described_class::EXPRESSIONS.keys.join(', ')
         expect do
           described_class.translate('blah', { country: 'NoSuchCountry' })
-        end.to raise_error(ArgumentError, 'Please specify a valid country: Canada, USA, or Australia')
+        end.to raise_error(ArgumentError, "Please specify a valid country: #{countries}")
       end
     end
   end
